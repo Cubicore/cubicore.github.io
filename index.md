@@ -171,7 +171,7 @@ title: CubiKit One
           <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/Flame_Sensor.html">Flame Sensor</a></li>
           <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/HC_SR04_Ultrasonic_Sensor.html">HC-SR04 Ultrasonic Sensor</a></li>
           <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/Knock_Sensor.html">Knock Sensor</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/PIR_Motion_Sensor.html">PIR Motion Sensor</a></li>
         </ul>
       </details>
     </div>
