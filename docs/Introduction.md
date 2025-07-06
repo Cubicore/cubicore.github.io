@@ -155,114 +155,25 @@ title: CubiKit One
     <h2>WiFi</h2>
     <div>
       <p>
-        This section serves as a guide for using the CubiKit One’s built-in Wi-Fi capabilities to run sensor-based IoT projects. With the Lorfi development boards' 2.4 GHz Wi-Fi support, you’ll learn how to connect sensors, collect data wirelessly, and transmit it to cloud platforms or local dashboards. The step-by-step tutorials will walk you through configuring the network, coding Wi-Fi-enabled features, and building real world applications such as remote monitoring, data logging, and smart automation all powered by the CubiKit One.
+        This section provides a comprehensive tutorial guide on using the CubiKit One’s built-in 2.4 GHz Wi-Fi capabilities for sensor-based IoT projects. You'll learn how to connect sensors, transmit data wirelessly, and interface with cloud platforms or local dashboards using the Lorfi development boards. The guide covers three key topics: integrating Wi-Fi with popular IoT platforms (such as ThingsBoard, Blynk, or Firebase), building local web server applications for real-time monitoring and control, and setting up network server communication for device-to-device or LAN-based interactions. Through these step-by-step tutorials, you'll gain hands-on experience in configuring Wi-Fi networks, writing Wi-Fi-enabled code, and developing real-world applications like remote monitoring, data logging, and smart automation—all powered by the CubiKit One.
       </p>
     </div>
-    <div style="margin-bottom:2rem;">
-        <h4><strong>Platform(ThingsPH)</strong></h4>
-        <div>
-          <p style="text-align:justify;display:inline-block;margin-bottom:2rem;">
-            Lorfi-WB is built around the ESP32 chipset and supports both Wi-Fi and Bluetooth Low Energy (BLE). It is best suited for smart home, mobile-connected, and local wireless control use cases that require interaction with smartphones or home automation platforms.
-          </p>
-        </div>
-        <div>
-          <details>
-            <summary>Sample Guides</summary>
-            <ul>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Analog_Rotation_Sensor.html">Analog Rotation Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Ball_Tilt_Switch_Sensor.html">Ball Tilt Switch Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Crash_Sensor.html">Crash Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Flame_Sensor.html">Flame Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/GUVA_S12SD_3528_Ultraviolet_Sensor.html">Ultraviolet Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Hall_Magnetic_Sensor.html">Hall Magnetic Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/HC_SR04_Ultrasonic_Sensor.html">HC-SR04 Ultrasonic Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Knock_Sensor.html">Knock Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Line_Tracking_Sensor.html">Line Tracking Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/LM35_Temperature_Sensor.html">LM35 Temperature Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Analog_Sound_Sensor.html">Analog Sound Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/MMA8452Q_Module_Acceleration_Tilt_Sensor.html">Acceleration Tilt Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Gas_Sensor.html">Gas Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Obstacle_Avoidance_Sensor.html">Obstacle Avoidance Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Photo_Resistor_Sensor.html">Photo Resistor Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/PIR_Motion_Sensor.html">PIR Motion Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Soil_Humidity_Sensor.html">Soil Humidity Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Steam_Sensor.html">Steam Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/TEMT6000_Sensor.html">Ambient Light Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Thin_Film_Pressure_Sensor.html">Thin-film Pressure Sensor</a></li>
-            </ul>
-          </details>
-      </div>
-      <div style="margin-bottom:2rem;">
-        <h4><strong>WiFi Server</strong></h4>
-        <div>
-          <p style="text-align:justify;display:inline-block;margin-bottom:2rem;">
-            Lorfi-WB is built around the ESP32 chipset and supports both Wi-Fi and Bluetooth Low Energy (BLE). It is best suited for smart home, mobile-connected, and local wireless control use cases that require interaction with smartphones or home automation platforms.
-          </p>
-        </div>
-        <div>
-          <details>
-            <summary>Sample Guides</summary>
-            <ul>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Analog_Rotation_Sensor.html">Analog Rotation Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Ball_Tilt_Switch_Sensor.html">Ball Tilt Switch Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Crash_Sensor.html">Crash Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Flame_Sensor.html">Flame Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/GUVA_S12SD_3528_Ultraviolet_Sensor.html">Ultraviolet Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Hall_Magnetic_Sensor.html">Hall Magnetic Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/HC_SR04_Ultrasonic_Sensor.html">HC-SR04 Ultrasonic Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Knock_Sensor.html">Knock Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Line_Tracking_Sensor.html">Line Tracking Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/LM35_Temperature_Sensor.html">LM35 Temperature Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Analog_Sound_Sensor.html">Analog Sound Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/MMA8452Q_Module_Acceleration_Tilt_Sensor.html">Acceleration Tilt Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Gas_Sensor.html">Gas Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Obstacle_Avoidance_Sensor.html">Obstacle Avoidance Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Photo_Resistor_Sensor.html">Photo Resistor Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/PIR_Motion_Sensor.html">PIR Motion Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Soil_Humidity_Sensor.html">Soil Humidity Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Steam_Sensor.html">Steam Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/TEMT6000_Sensor.html">Ambient Light Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Thin_Film_Pressure_Sensor.html">Thin-film Pressure Sensor</a></li>
-            </ul>
-          </details>
-      </div>
-      <div style="margin-bottom:2rem;">
-        <h4><strong>Web Server</strong></h4>
-        <div>
-          <p style="text-align:justify;display:inline-block;margin-bottom:2rem;">
-            Lorfi-WB is built around the ESP32 chipset and supports both Wi-Fi and Bluetooth Low Energy (BLE). It is best suited for smart home, mobile-connected, and local wireless control use cases that require interaction with smartphones or home automation platforms.
-          </p>
-        </div>
-        <div>
-          <details>
-            <summary>Sample Guides</summary>
-            <ul>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Analog_Rotation_Sensor.html">Analog Rotation Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Ball_Tilt_Switch_Sensor.html">Ball Tilt Switch Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Crash_Sensor.html">Crash Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Flame_Sensor.html">Flame Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/GUVA_S12SD_3528_Ultraviolet_Sensor.html">Ultraviolet Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Hall_Magnetic_Sensor.html">Hall Magnetic Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/HC_SR04_Ultrasonic_Sensor.html">HC-SR04 Ultrasonic Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Knock_Sensor.html">Knock Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Line_Tracking_Sensor.html">Line Tracking Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/LM35_Temperature_Sensor.html">LM35 Temperature Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Analog_Sound_Sensor.html">Analog Sound Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/MMA8452Q_Module_Acceleration_Tilt_Sensor.html">Acceleration Tilt Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Gas_Sensor.html">Gas Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Obstacle_Avoidance_Sensor.html">Obstacle Avoidance Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Photo_Resistor_Sensor.html">Photo Resistor Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/PIR_Motion_Sensor.html">PIR Motion Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Soil_Humidity_Sensor.html">Soil Humidity Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Steam_Sensor.html">Steam Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/TEMT6000_Sensor.html">Ambient Light Sensor</a></li>
-              <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/Thin_Film_Pressure_Sensor.html">Thin-film Pressure Sensor</a></li>
-            </ul>
-          </details>
-      </div>
+    <div>
+      <details>
+        <summary>Sample Guides</summary>
+        <ul>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/3W_LED_Module.html">3W LED Module</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Active_Buzzer.html">Active Buzzer Module</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Single_Relay_Module.html">Single Relay Module</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Photo_Interrupter_Module.html">Photo Interruptor Module</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Capacitive_Touch_Module.html">Capacitive Touch Module</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/Flame_Sensor.html">Flame Sensor</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/HC_SR04_Ultrasonic_Sensor.html">HC-SR04 Ultrasonic Sensor</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/Knock_Sensor.html">Knock Sensor</a></li>
+          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
+        </ul>
+      </details>
     </div>
   </div>
 
