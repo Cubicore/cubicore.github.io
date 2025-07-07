@@ -27,7 +27,7 @@ For instance, smart robots can utilize this module for lighting purposes. Howeve
 
 ## Hardware Setup
 
-|     Module    |   Lorfi L   |
+|   Component   | Lorfi Board |
 |---------------|-------------|
 | Signal        | PB5         |
 | VCC           | 5V          |
@@ -43,13 +43,9 @@ Connect the Signal pin of sensor to Digital Input of the Lorfi board, negative p
 
 You can find complete <a href="/docs/Hardware_Guide.html">Lorfi-L IO pinout here</a>.
 
-*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
-
 #### Using Lorfi Interface board
 
 You can find complete guide for <a href="/docs/Hardware_Guide.html">Lorfi Interface here</a>.
-
-*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
 
 ## Software Setup
 
@@ -64,6 +60,30 @@ Once RAK3172 is added, you can now select it from the board selection.
 </p>
 
 If failing, test the UART connection by checking the version. Use `AT+VER=?` command with baud rate of 115200. In case of MCU brick, revive the RAK3172 by following this [guide from RAKwireless](https://learn.rakwireless.com/hc/en-us/articles/26687606549911-How-To-Guide-STM32CubeProgrammer-for-RAK-Modules).
+
+## Web Server
+
+# Setup
+
+# Sample Code
+
+# Output
+
+## Network Server
+
+# Setup
+
+# Sample Code
+
+# Output
+
+## Platorm Server (ThingsPH)
+
+# Setup
+
+# Sample Code
+
+# Output
 
 ## Sample Code:
 ```c
