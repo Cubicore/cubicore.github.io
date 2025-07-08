@@ -141,7 +141,7 @@ title: Component Lists
       <td style="padding: 10px;">Flame Sensor</td>
       <td style="text-align:justify;padding: 10px;"><a href="\docs\projects\Basic\Lorfi-L\Sensors\Flame_Sensor.html">LoRaWAN</a>/<a href="\docs\projects\Basic\Lorfi-WB\Sensors\Flame_Sensor.html">WiFi</a>/<a href="\docs\projects\Basic\Lorfi-WB\Sensors\Flame_Sensor.html">BLE</a></td>
       <td style="text-align:justify;padding: 10px;">1</td>
-      <td style="text-align:justify;padding: 10px;"><img src="\assets\Images\LORFI_Components\Components\DHT11_Temperature_and_Humidity_Sensor.webp" style="max-width: 100px;"></td>
+      <td style="text-align:justify;padding: 10px;"><img src="\assets\Images\LORFI_Components\Components\Flame_Sensor.webp" style="max-width: 100px;"></td>
     </tr>
     <tr>
       <td style="padding: 10px;">GUVA S12S 3528 Ultraviolet Sensor</td>

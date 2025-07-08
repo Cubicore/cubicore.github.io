@@ -63,17 +63,18 @@ Once ESP32 board is added, you can now select it from the board selection.
 
 ## Sample Code:
 ```c
-#define LED 2
+#define inputPin 2
 
-void setup()
-{
-  pinMode(LED, OUTPUT); 
+void setup() {
+  pinMode(inputPin, INPUT);     // set pushbutton as input
 }
-void loop()
-{    digitalWrite(LED, HIGH);   //Turn off led
-     delay(1000);
-     digitalWrite(LED, LOW);    //Turn on led
-     delay(1000);
+void loop(){
+  int val = digitalRead(inputPin);  // read input value
+  if (val == HIGH) {            // check if the input is HIGH
+    Serial.println("Button Pressed");
+  } else {
+    Serial.println("No action");
+  }
 }
 ```
 

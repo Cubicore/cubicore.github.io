@@ -105,3 +105,12 @@ After installation, select your RAK3172 board via Tools > Board > RAKWireless RU
   <img src="\assets\Images\LORFI_Components\Software-Guide_Images\Software_Guide7.jpg" alt="Centered Image" width="900" />
 </p>
 
+# ThingsPH setup and configuration with Arduino IDE
+
+  Go to the official [ThingsPH website](https://things.ph/) and create an account.
+
+  After signing up go to the docs section of the platform.
+
+  *insertimage*
+
+  Go to the documentation section, then MQTT You will see here your credentials or configurations that you'll use in your script.

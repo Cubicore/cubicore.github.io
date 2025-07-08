@@ -19,11 +19,11 @@ Designed to match the sensitivity of the human eye, the TEMT6000 performs best a
 
 |     Module    |   Lorfi WB  |
 |---------------|-------------|
-| Signal        | GPIO2       |
+| Signal        | A0          |
 | VCC           | 5V          |
 | GND           | GND         |
 
-Connect the Signal pin of the sensor to the Digital Input GPIO2 on the Lorfi board, connect the GND pin to GND port, VCC pin to 5V port.
+Connect the Signal pin of the sensor to the Analog Input A0 on the Lorfi board, connect the GND pin to GND port, VCC pin to 5V port.
 
 <p style="text-align: center;">
   <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\21.png" alt="Centered Image" width="900" />
@@ -53,7 +53,7 @@ Once ESP32 board is added, you can now select it from the board selection.
 
 ```c
 ///Arduino Sample Code
-#define Sensor 2
+#define Sensor A0
 
 void setup() {
   Serial.begin(9600);

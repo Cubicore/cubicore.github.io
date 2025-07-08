@@ -155,7 +155,7 @@ title: CubiKit One
     <h2>WiFi</h2>
     <div>
       <p>
-        This section is a step-by-step guide to using the CubiKit One’s 2.4 GHz Wi-Fi for sensor-based IoT projects. It covers connecting sensors, sending data to the cloud or local dashboards, and building real-time monitoring and control apps. You'll learn how to work with platforms like ThingsBoard, create local web server, and enable device-to-device communication using the Lorfi board.
+        This section is a step-by-step guide to using the CubiKit One’s 2.4 GHz Wi-Fi for sensor-based IoT projects. It covers connecting sensors, sending data to the cloud or local dashboards, and building real-time monitoring and control apps. You'll learn how to work with platforms like ThingsPH, create local web server, and enable device-to-device communication using the Lorfi board.
       </p>
     </div>
     <div>
