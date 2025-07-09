@@ -181,6 +181,86 @@ void loop() {
 
 ## Sample Code
 
+```c
+#include <WiFi.h>
+
+// === Replace with your WiFi credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR SSID PASSWORD";
+
+// === Web Server Port ===
+WiFiServer server(80);
+
+#define SOUND_SENSOR_PIN A0
+int soundValue = 0;
+
+void setup() {
+  Serial.begin(115200);
+
+  // Connect to Wi-Fi
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Start the server
+  server.begin();
+}
+
+void loop() {
+  // Read analog value from sound sensor
+  soundValue = analogRead(SOUND_SENSOR_PIN);
+  Serial.print("Sound Sensor Value: ");
+  Serial.println(soundValue);
+
+  // Handle incoming web client
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("New Client.");
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+        currentLine += c;
+
+        if (c == '\n') {
+          // End of HTTP request
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-type:text/html");
+          client.println();
+
+          // Webpage HTML content
+          client.println("<!DOCTYPE html><html>");
+          client.println("<head><meta charset='utf-8'><title>ESP32 Sound Sensor</title></head>");
+          client.println("<body>");
+          client.println("<h2>ESP32 Sound Sensor Reading</h2>");
+          client.printf("<p>Analog Value: <strong>%d</strong></p>", soundValue);
+          client.println("</body></html>");
+
+          break;
+        }
+      }
+    }
+
+    delay(1);
+    client.stop();
+    Serial.println("Client disconnected.");
+  }
+
+  delay(1000); // Read and serve every 1 second
+}
+```
+
 ## Expected Output
 
 # Network Server (Access Point)

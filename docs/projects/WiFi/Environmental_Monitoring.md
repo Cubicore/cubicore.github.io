@@ -191,6 +191,109 @@ void loop() {
 
 ## Sample Code
 
+```c
+#include <WiFi.h>
+#include <DHT11.h>
+
+// === WiFi Credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR SSID PASSWORD";
+
+// === Web Server Port ===
+WiFiServer server(80);
+
+// === DHT11 Sensor Setup ===
+#define DHT11_PIN 2
+DHT11 dht11(DHT11_PIN);
+int temperature = 0;
+int humidity = 0;
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Connect to WiFi
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Start the server
+  server.begin();
+}
+
+void loop() {
+  readSensorData();
+
+  WiFiClient client = server.available();  // listen for incoming clients
+
+  if (client) {
+    Serial.println("New Client.");
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+        currentLine += c;
+
+        if (c == '\n') {
+          // End of HTTP request
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-type:text/html");
+          client.println();
+
+          // HTML Response
+          client.println("<!DOCTYPE html><html>");
+          client.println("<head><meta charset='utf-8'><title>ESP32 DHT11 Monitor</title></head>");
+          client.println("<body><h2>ESP32 Environment Monitor</h2>");
+
+          if (temperature != 0 && humidity != 0) {
+            client.printf("<p>Temperature: <strong>%d &deg;C</strong></p>", temperature);
+            client.printf("<p>Humidity: <strong>%d %%</strong></p>", humidity);
+          } else {
+            client.println("<p style='color:red;'>Sensor Error or No Data</p>");
+          }
+
+          client.println("</body></html>");
+          break;
+        }
+      }
+    }
+    client.stop();
+    Serial.println("Client disconnected.");
+  }
+
+  delay(2000); // Read every 2 seconds
+}
+
+// === Read DHT11 Sensor Data ===
+void readSensorData() {
+  int result = dht11.readTemperatureHumidity(temperature, humidity);
+
+  if (result == 0) {
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.print(" °C\tHumidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+  } else {
+    Serial.print("DHT11 Error: ");
+    Serial.println(DHT11::getErrorString(result));
+    temperature = 0;
+    humidity = 0;
+  }
+}
+```
+
+
 # Network Server (Access Point)
 
 ## Sample Code

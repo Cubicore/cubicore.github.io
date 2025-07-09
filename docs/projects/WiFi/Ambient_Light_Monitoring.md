@@ -181,6 +181,83 @@ void loop() {
 
 ## Sample Code
 
+```c
+#include <WiFi.h>
+
+// === WiFi Credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR SSID PASSWORD";
+
+// === Web Server Port ===
+WiFiServer server(80);
+
+// === Ambient Light Sensor Pin ===
+// On ESP32, use ADC-capable pin like GPIO34, 35, 36, or 39.
+#define LIGHT_SENSOR_PIN A0
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LIGHT_SENSOR_PIN, INPUT);
+
+  // Connect to Wi-Fi
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  // Wi-Fi Connected
+  Serial.println("\nWiFi connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Start Web Server
+  server.begin();
+}
+
+void loop() {
+  int lightValue = analogRead(LIGHT_SENSOR_PIN);  // Read ambient light level
+  Serial.print("Ambient Light Reading: ");
+  Serial.println(lightValue);
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("New Client.");
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+        currentLine += c;
+
+        if (c == '\n') {
+          // Send HTML response
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-type:text/html");
+          client.println();
+
+          client.println("<!DOCTYPE html><html>");
+          client.println("<head><meta charset='utf-8'><title>Ambient Light Sensor</title></head>");
+          client.println("<body><h2>ESP32 Ambient Light Monitor</h2>");
+          client.printf("<p>Analog Light Value: <strong>%d</strong></p>", lightValue);
+          client.println("</body></html>");
+          break;
+        }
+      }
+    }
+
+    client.stop();
+    Serial.println("Client disconnected.");
+  }
+
+  delay(1000);  // Optional: Update every 1 second
+}
+```
+
 ## Expected Output
 
 # Network Server (Access Point)

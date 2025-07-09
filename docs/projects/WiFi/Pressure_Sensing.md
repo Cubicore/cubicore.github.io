@@ -195,6 +195,87 @@ delay(5000);  // Send data every 10 seconds
 
 ## Sample Code
 
+```c
+#include <WiFi.h>
+
+// === Replace with your WiFi credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR SSID PASSWORD";
+
+// === Web Server Port ===
+WiFiServer server(80);
+
+#define SENSOR_PIN 2 
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(SENSOR_PIN, INPUT);
+
+  // Connect to Wi-Fi
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  // Connected
+  Serial.println("\nWiFi connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Start the server
+  server.begin();
+}
+
+void loop() {
+  // Read analog value from pressure sensor
+  int pressureValue = analogRead(SENSOR_PIN);
+  Serial.print("Pressure Sensor Reading: ");
+  Serial.println(pressureValue);
+
+  // Listen for incoming clients
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("New Client.");
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+        currentLine += c;
+
+        if (c == '\n') {
+          // End of HTTP request — respond with HTML
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-type:text/html");
+          client.println();
+
+          // HTML Content
+          client.println("<!DOCTYPE html><html>");
+          client.println("<head><meta charset='utf-8'><title>ESP32 Pressure Sensor</title></head>");
+          client.println("<body><h2>ESP32 Pressure Sensor</h2>");
+          client.printf("<p>Analog Reading: <strong>%d</strong></p>", pressureValue);
+          client.println("</body></html>");
+
+          break;
+        }
+      }
+    }
+
+    // Close connection
+    delay(1);
+    client.stop();
+    Serial.println("Client disconnected.");
+  }
+
+  delay(1000);  // Optional: delay between loop iterations
+}
+```
+
 # Network Server (Access Point)
 
 ## Sample Code

@@ -198,6 +198,114 @@ void loop() {
 
 ## Sample Code
 
+```c
+#include <WiFi.h>
+
+// === Ultrasonic Sensor Pins ===
+#define TRIG_PIN 2
+#define ECHO_PIN 14
+
+// === WiFi Credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR SSID PASSWORD";
+
+// === Web Server Port ===
+WiFiServer server(80);
+
+// === Global Distance Variable ===
+float distance_cm = 0;
+
+// === Distance Threshold ===
+const float object_threshold_cm = 20.0;  // Change this as needed
+
+void setup() {
+  Serial.begin(115200);
+
+  // Sensor Pin Modes
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // WiFi Connection
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Start Server
+  server.begin();
+}
+
+void loop() {
+  measureDistance();  // Update global distance_cm
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("New Client.");
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+        currentLine += c;
+
+        if (c == '\n') {
+          // End of HTTP request
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-type:text/html");
+          client.println();
+
+          // HTML Response
+          client.println("<!DOCTYPE html><html>");
+          client.println("<head><meta charset='utf-8'><title>Distance Monitor</title></head>");
+          client.println("<body><h2>ESP32 Distance Sensor</h2>");
+          client.printf("<p>Distance: <strong>%.2f cm</strong></p>", distance_cm);
+
+          if (distance_cm > 0 && distance_cm <= object_threshold_cm) {
+            client.println("<p style='color:red;'>Object Detected!</p>");
+          } else {
+            client.println("<p style='color:green;'>No Object Detected.</p>");
+          }
+
+          client.println("</body></html>");
+          break;
+        }
+      }
+    }
+    client.stop();
+    Serial.println("Client disconnected.");
+  }
+
+  delay(1000);  // Wait before the next loop
+}
+
+// === Measure Distance Function ===
+void measureDistance() {
+  long duration;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance_cm = duration * 0.0343 / 2;
+
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.println(" cm");
+}
+```
+
 ## Expected Output
 
 # Network Server (Access Point)
