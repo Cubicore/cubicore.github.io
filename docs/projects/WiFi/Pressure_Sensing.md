@@ -1,6 +1,6 @@
 ---
 layout: project
-title: Thin-Film Pressure Sensor using Lorfi-WB
+title: Pressure Monitoring using Lorfi-WiFi
 ---
 
 # Description

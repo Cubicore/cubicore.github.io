@@ -1,6 +1,6 @@
 ---
 layout: project
-title: Ambient Light Sensor using Lorfi-WB
+title: Ambient Light Monitoring using Lorfi-WiFi
 ---
 
 # Description

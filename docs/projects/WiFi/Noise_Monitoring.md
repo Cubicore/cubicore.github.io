@@ -1,6 +1,6 @@
 ---
 layout: project
-title: Sound Monitoring using Lorfi-WB
+title: Sound Monitoring using Lorfi-WiFi
 ---
 
 # Description
