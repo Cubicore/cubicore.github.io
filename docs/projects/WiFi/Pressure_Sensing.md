@@ -190,17 +190,17 @@ delay(5000);  // Send data every 10 seconds
 Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Pressure Monitoring.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\21.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\21.jpg" alt="Centered Image" width="900" />
 </p>
 
 After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\22.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\22.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\23.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\23.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
@@ -208,11 +208,11 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\24.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\24.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\25.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\25.jpg" alt="Centered Image" width="900" />
 </p>
 
 # Web Server

@@ -193,17 +193,17 @@ void loop() {
 Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Distance to Object Monitoring.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\16.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\16.jpg" alt="Centered Image" width="900" />
 </p>
 
 After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\17.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\17.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\18.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\18.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
@@ -211,11 +211,11 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
 # Web Server
