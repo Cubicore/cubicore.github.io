@@ -155,23 +155,39 @@ title: CubiKit One
     <h2>WiFi</h2>
     <div>
       <p>
-        This section provides a comprehensive tutorial guide on using the CubiKit One’s built-in 2.4 GHz Wi-Fi capabilities for sensor-based IoT projects. You'll learn how to connect sensors, transmit data wirelessly, and interface with cloud platforms or local dashboards using the Lorfi development boards. The guide covers three key topics: integrating Wi-Fi with popular IoT platforms (such as ThingsBoard, Blynk, or Firebase), building local web server applications for real-time monitoring and control, and setting up network server communication for device-to-device or LAN-based interactions. Through these step-by-step tutorials, you'll gain hands-on experience in configuring Wi-Fi networks, writing Wi-Fi-enabled code, and developing real-world applications like remote monitoring, data logging, and smart automation—all powered by the CubiKit One.
+        This section is a step-by-step guide to using the CubiKit One’s 2.4 GHz Wi-Fi for sensor-based IoT projects. It covers connecting sensors, sending data to the cloud or local dashboards, and building real-time monitoring and control apps. You'll learn how to work with platforms like ThingsPH, create local web server, and enable device-to-device communication using the Lorfi board.
       </p>
     </div>
     <div>
       <details>
         <summary>Sample Guides</summary>
         <ul>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/3W_LED_Module.html">3W LED Module</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Active_Buzzer.html">Active Buzzer Module</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Single_Relay_Module.html">Single Relay Module</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Photo_Interrupter_Module.html">Photo Interruptor Module</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Modules/Capacitive_Touch_Module.html">Capacitive Touch Module</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/DTH11_Temperature_and_Humidity_Sensor.html">DHT11 Temperature and Humidity Sensor</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/Flame_Sensor.html">Flame Sensor</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/HC_SR04_Ultrasonic_Sensor.html">HC-SR04 Ultrasonic Sensor</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-L/Sensors/Knock_Sensor.html">Knock Sensor</a></li>
-          <li><a href="/docs/projects/Basic/Lorfi-WB/Sensors/PIR_Motion_Sensor.html">PIR Motion Sensor</a></li>
+          <li><a href="/docs/projects//WiFi/Ambient_Light_Monitoring.html">Ambient Light Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Distance_Monitoring.html">Distance Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Environmental_Monitoring.html">Environmental Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Noise_Monitoring.html">Noise Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Pressure_Sensing.html">Pressure Monitoring</a></li>
+        </ul>
+      </details>
+    </div>
+  </div>
+
+  <div style="margin-bottom:1rem;">
+    <h2>Bluetooth</h2>
+    <div>
+      <p>
+        This section provides a step-by-step guide to using the CubiKit One’s Bluetooth protocol for sensor-based IoT applications. It walks you through connecting sensors, transmitting data to mobile apps or nearby devices, and building real-time control and monitoring experiences. You'll explore Bluetooth-based communication using the Lorfi board and learn how to integrate with platforms that support local and peer-to-peer data exchange.
+      </p>
+    </div>
+    <div>
+      <details>
+        <summary>Sample Guides</summary>
+        <ul>
+          <li><a href="/docs/projects//WiFi/Ambient_Light_Monitoring.html">Ambient Light Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Distance_Monitoring.html">Distance Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Environmental_Monitoring.html">Environmental Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Noise_Monitoring.html">Noise Monitoring</a></li>
+          <li><a href="/docs/projects//WiFi/Pressure_Sensing.html">Pressure Monitoring</a></li>
         </ul>
       </details>
     </div>
@@ -187,7 +203,3 @@ title: CubiKit One
     <h3>Coming Soon...</h3>
   </div>
 
-  <div style="margin-bottom:1rem;">
-    <h2>BLE</h2>
-    <h3>Coming Soon...</h3>
-  </div>
