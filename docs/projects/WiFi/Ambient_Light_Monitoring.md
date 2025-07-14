@@ -186,7 +186,7 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\29.pjpgng" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\29.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
