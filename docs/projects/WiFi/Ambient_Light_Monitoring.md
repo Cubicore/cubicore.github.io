@@ -175,7 +175,33 @@ void loop() {
 
 ## Dashboard Creation
 
+Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Ambient Light Monitoring.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\27.png" alt="Centered Image" width="900" />
+</p>
+
+After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\28.png" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\29.png" alt="Centered Image" width="900" />
+</p>
+
 ## Expected Output
+
+After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\30.png" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\31.png" alt="Centered Image" width="900" />
+</p>
 
 # Web Server
 
@@ -192,7 +218,6 @@ const char* password = "YOUR SSID PASSWORD";
 WiFiServer server(80);
 
 // === Ambient Light Sensor Pin ===
-// On ESP32, use ADC-capable pin like GPIO34, 35, 36, or 39.
 #define LIGHT_SENSOR_PIN A0
 
 void setup() {

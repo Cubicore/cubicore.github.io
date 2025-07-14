@@ -107,10 +107,41 @@ After installation, select your RAK3172 board via Tools > Board > RAKWireless RU
 
 # ThingsPH setup and configuration with Arduino IDE
 
-  Go to the official [ThingsPH website](https://things.ph/) and create an account.
+Go to the official [ThingsPH website](https://things.ph/) and create an account.
 
-  After signing up go to the docs section of the platform.
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\2.jpg" alt="Centered Image" width="900" />
+</p>
 
-  *insertimage*
+After signing up go to the docs section of the platform.
 
-  Go to the documentation section, then MQTT You will see here your credentials or configurations that you'll use in your script.
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\3.jpg" alt="Centered Image" width="900" />
+</p>
+
+Go to the documentation section, then click the MQTT client section. There you will see here the information or configurations that you'll use in your script. Copy the Host, Port, Username, and Password settings to allow the board to connect to the MQTT server.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\4.jpg" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\5.jpg" alt="Centered Image" width="900" />
+</p>
+
+After that go to device types, and create your own device type. And add telemetries for the specific data that you're going to transfer from your device to the Platform(ThingsPH) via MQTT.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\6.jpg" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\7.jpg" alt="Centered Image" width="900" />
+</p>
+
+Lastly create you're own device with the device type that you've created. Then you're all set.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\8.jpg" alt="Centered Image" width="900" />
+</p>
+

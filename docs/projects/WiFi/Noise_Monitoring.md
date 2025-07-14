@@ -175,7 +175,33 @@ void loop() {
 
 ## Dashboard Creation
 
+Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Noise Monitoring.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\33.png" alt="Centered Image" width="900" />
+</p>
+
+After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\34.png" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\35.png" alt="Centered Image" width="900" />
+</p>
+
 ## Expected Output
+
+After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.png" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.png" alt="Centered Image" width="900" />
+</p>
 
 # Web Server
 
