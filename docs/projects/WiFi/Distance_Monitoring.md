@@ -55,9 +55,7 @@ Once ESP32 board is added, you can now select it from the board selection.
 
 ## Setup
 
-Input this configurations to the script that is correlated with it:
-
-*INPUT IMAGE HERE*
+First setup the MQTT configuration of your device. Click <a href="/docs/Software_Guide.html"> to view the proper setup for ThingsPH.
 
 ## Sample Code
 
