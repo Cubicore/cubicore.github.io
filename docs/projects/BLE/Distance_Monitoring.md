@@ -1,44 +1,43 @@
 ---
 layout: project
-title: Environmental Monitoring using Lorfi-WIFI
+title: Distance Monitoring using Lorfi-WIFI
 ---
 
 # Description
 
-This guide shows how to build a simple environmental monitoring system using the DHT11 sensor and the Lorfi-WIFI board. The DHT11 measures temperature and humidity, while the Lorfi-WIFI sends the data wirelessly. With its easy setup and real-time data transmission, this project is ideal for learning how to connect sensors to IoT devices and monitor environmental conditions remotely.
+This guide covers how to build a distance monitoring system using an ultrasonic sensor and the Lorfi-WIFI board. The ultrasonic sensor accurately measures distances from 2 cm to 450 cm without contact, while the Lorfi-WIFI transmits the data wirelessly. Ideal for learning real-time distance tracking, this project demonstrates how to combine sensors with IoT boards for remote monitoring applications.
 
 # Specification
 
-- Supply Voltage: +5 V
-- Temperature range: 0-50 °C error of ± 2 °C
-- Humidity: 20-90% RH ± 5% RH error
-- Interface: Digital
+- Working voltage：0.5V(DC)
+- Working current：15mA
+- Detecting range：2-450cm
+- Detecting angle：15 degrees
+- Input trigger pulse：10us TTL Level
+- Output echo signal： output TTL level signal(HIGH)，proportional to range.
 
 ## Hardware Setup
 
-|     Module    |   Lorfi WB  |
-|---------------|-------------|
-| Signal        | GPIO2       |
-| VCC           | 5V          |
-| GND           | GND         |
+Next, please refer to the following connection table:
 
-Connect the Signal pin of the sensor to the Digital Input GPIO2 on the Lorfi board, connect the GND pin to GND port, VCC pin to 5V port.
+| Ultrasonic ranger | Lorfi WB    | 
+|-------------------|-------------|
+| ECHO              | GPIO14      |
+| TRIG              | GPIO2       |
+| VCC               | 5V          |
+| GND               | GND         |
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\4.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\8.png" alt="Centered Image" width="900" />
 </p>
 
 #### Using directly Lorfi-WB
 
 You can find complete <a href="/docs/Hardware_Guide.html">Lorfi-WB IO pinout here</a>.
 
-*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
-
 #### Using Lorfi Interface board
 
 You can find complete guide for <a href="/docs/Hardware_Guide.html">Lorfi Interface here</a>.
-
-*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
 
 ## Software Setup
 
@@ -64,7 +63,6 @@ First setup the MQTT configuration of your device. Click <a href="/docs/Software
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include <DHT11.h>
 
 // === WiFi Settings ===
 const char* ssid = "PLDTHOMEFIBRpyh75";
@@ -77,13 +75,12 @@ const char* mqtt_user = "68637fdd2ef34a81cc197c5d";
 const char* mqtt_pass = "vE77J2xvmI8VHQTh0KacgrxP";
 
 // Topics
-const char* publish_topic = "100000";
-const char* subscribe_topic = "device/your_device_id/command"; // optional
+const char* publish_topic = "100001";
+const char* subscribe_topic = "200000";  // optional
 
-// === DHT11 Sensor Setup ===
-// Change pin accordingly to your ESP32 GPIO
-#define DHT_PIN 2
-DHT11 dht11(DHT_PIN);
+// === Ultrasonic Sensor Pins ===
+#define TRIG_PIN 2
+#define ECHO_PIN 14
 
 // MQTT client setup
 WiFiClient espClient;
@@ -139,68 +136,74 @@ void reconnect() {
   }
 }
 
+// === Setup ===
 void setup() {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);
 }
 
+// === Main Loop ===
 void loop() {
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
 
-  int temperature = 0;
-  int humidity = 0;
-  int result = dht11.readTemperatureHumidity(temperature, humidity);
+  // Measure distance
+  long duration;
+  float distance_cm;
 
-  if (result == 0) {
-    // Create JSON object
-    StaticJsonDocument<256> doc;
-    doc["hardware_serial"] = "100000";
-    JsonObject payload_fields = doc.createNestedObject("payload_fields");
-    payload_fields["temperature"] = temperature;
-    payload_fields["humidity"] = humidity;
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
 
-    // Serialize to JSON string
-    char jsonBuffer[512];
-    serializeJson(doc, jsonBuffer);
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance_cm = duration * 0.0343 / 2.0;
 
-    // Publish to MQTT
-    client.publish(publish_topic, jsonBuffer);
-    Serial.println("Data published:");
-    Serial.println(jsonBuffer);
-  } else {
-    Serial.print("DHT11 read error: ");
-    Serial.println(DHT11::getErrorString(result));
-  }
+  // Display on Serial
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.println(" cm");
 
-  delay(10000); // Publish every 10 seconds
+  // Publish JSON data to MQTT
+  StaticJsonDocument<256> doc;
+  doc["hardware_serial"] = "100001";
+  JsonObject payload_fields = doc.createNestedObject("payload_fields");
+  payload_fields["distance_cm"] = distance_cm;
+
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer);
+
+  client.publish(publish_topic, jsonBuffer);
+  Serial.println("Data published:");
+  Serial.println(jsonBuffer);
+
+  delay(10000);  // Send every 10 seconds
 }
 ```
 
 ## Dashboard Creation
 
-Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Environmental Monitoring.
+Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Distance to Object Monitoring.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\10.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\16.jpg" alt="Centered Image" width="900" />
 </p>
 
 After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\11.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\17.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\12.jpg" alt="Centered Image" width="900" />
-</p>
-
-<p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\18.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
@@ -208,11 +211,11 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
 # Web Server
@@ -221,7 +224,10 @@ After setting up your dashboard this will be the expected outcome in your platfo
 
 ```c
 #include <WiFi.h>
-#include <DHT11.h>
+
+// === Ultrasonic Sensor Pins ===
+#define TRIG_PIN 2
+#define ECHO_PIN 14
 
 // === WiFi Credentials ===
 const char* ssid = "YOUR SSID";
@@ -230,16 +236,20 @@ const char* password = "YOUR SSID PASSWORD";
 // === Web Server Port ===
 WiFiServer server(80);
 
-// === DHT11 Sensor Setup ===
-#define DHT11_PIN 2
-DHT11 dht11(DHT11_PIN);
-int temperature = 0;
-int humidity = 0;
+// === Global Distance Variable ===
+float distance_cm = 0;
+
+// === Distance Threshold ===
+const float object_threshold_cm = 20.0;  // Change this as needed
 
 void setup() {
   Serial.begin(115200);
-  
-  // Connect to WiFi
+
+  // Sensor Pin Modes
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // WiFi Connection
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -253,15 +263,14 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Start the server
+  // Start Server
   server.begin();
 }
 
 void loop() {
-  readSensorData();
+  measureDistance();  // Update global distance_cm
 
-  WiFiClient client = server.available();  // listen for incoming clients
-
+  WiFiClient client = server.available();
   if (client) {
     Serial.println("New Client.");
     String currentLine = "";
@@ -280,14 +289,14 @@ void loop() {
 
           // HTML Response
           client.println("<!DOCTYPE html><html>");
-          client.println("<head><meta charset='utf-8'><title>ESP32 DHT11 Monitor</title></head>");
-          client.println("<body><h2>ESP32 Environment Monitor</h2>");
+          client.println("<head><meta charset='utf-8'><title>Distance Monitor</title></head>");
+          client.println("<body><h2>ESP32 Distance Sensor</h2>");
+          client.printf("<p>Distance: <strong>%.2f cm</strong></p>", distance_cm);
 
-          if (temperature != 0 && humidity != 0) {
-            client.printf("<p>Temperature: <strong>%d &deg;C</strong></p>", temperature);
-            client.printf("<p>Humidity: <strong>%d %%</strong></p>", humidity);
+          if (distance_cm > 0 && distance_cm <= object_threshold_cm) {
+            client.println("<p style='color:red;'>Object Detected!</p>");
           } else {
-            client.println("<p style='color:red;'>Sensor Error or No Data</p>");
+            client.println("<p style='color:green;'>No Object Detected.</p>");
           }
 
           client.println("</body></html>");
@@ -299,28 +308,32 @@ void loop() {
     Serial.println("Client disconnected.");
   }
 
-  delay(2000); // Read every 2 seconds
+  delay(1000);  // Wait before the next loop
 }
 
-// === Read DHT11 Sensor Data ===
-void readSensorData() {
-  int result = dht11.readTemperatureHumidity(temperature, humidity);
+// === Measure Distance Function ===
+void measureDistance() {
+  long duration;
 
-  if (result == 0) {
-    Serial.print("Temperature: ");
-    Serial.print(temperature);
-    Serial.print(" °C\tHumidity: ");
-    Serial.print(humidity);
-    Serial.println(" %");
-  } else {
-    Serial.print("DHT11 Error: ");
-    Serial.println(DHT11::getErrorString(result));
-    temperature = 0;
-    humidity = 0;
-  }
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance_cm = duration * 0.0343 / 2;
+
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.println(" cm");
 }
 ```
+
+## Expected Output
 
 # Network Server (Access Point)
 
 ## Sample Code
+
+## Expected Output

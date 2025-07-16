@@ -145,3 +145,4 @@ Lastly create you're own device with the device type that you've created. Then y
   <img src="\assets\Images\LORFI_Components\ThingsPH_Images\8.jpg" alt="Centered Image" width="900" />
 </p>
 
+# MIT App Inventor setup and configuration with Arduino IDE

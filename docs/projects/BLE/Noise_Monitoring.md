@@ -1,44 +1,41 @@
 ---
 layout: project
-title: Environmental Monitoring using Lorfi-WIFI
+title: Sound Monitoring using Lorfi-WiFi
 ---
 
 # Description
 
-This guide shows how to build a simple environmental monitoring system using the DHT11 sensor and the Lorfi-WIFI board. The DHT11 measures temperature and humidity, while the Lorfi-WIFI sends the data wirelessly. With its easy setup and real-time data transmission, this project is ideal for learning how to connect sensors to IoT devices and monitor environmental conditions remotely.
+The analog sound sensor is mainly used to detect the intensity of surrounding sounds. It features a built-in potentiometer, allowing you to adjust the signal gain as needed. This sensor is great for creating interactive projects, such as a voice-activated switch.
 
 # Specification
 
-- Supply Voltage: +5 V
-- Temperature range: 0-50 °C error of ± 2 °C
-- Humidity: 20-90% RH ± 5% RH error
-- Interface: Digital
+- Supply Voltage: 3.3V to 5V
+- Interface: Analog
+- Size: 30*20mm
+- Weight: 4g
 
 ## Hardware Setup
 
-|     Module    |   Lorfi WB  |
+|     Sensor    |   Lorfi WB  |
 |---------------|-------------|
-| Signal        | GPIO2       |
+| Signal        | A0          |
 | VCC           | 5V          |
 | GND           | GND         |
 
-Connect the Signal pin of the sensor to the Digital Input GPIO2 on the Lorfi board, connect the GND pin to GND port, VCC pin to 5V port.
+
+Connect the S pin of module to Analog A0 of the Lorfi board, connect the negative pin to GND port, positive pin to 5V port.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\4.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\12.png" alt="Centered Image" width="900" />
 </p>
 
 #### Using directly Lorfi-WB
 
 You can find complete <a href="/docs/Hardware_Guide.html">Lorfi-WB IO pinout here</a>.
 
-*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
-
 #### Using Lorfi Interface board
 
 You can find complete guide for <a href="/docs/Hardware_Guide.html">Lorfi Interface here</a>.
-
-*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
 
 ## Software Setup
 
@@ -64,7 +61,6 @@ First setup the MQTT configuration of your device. Click <a href="/docs/Software
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
-#include <DHT11.h>
 
 // === WiFi Settings ===
 const char* ssid = "PLDTHOMEFIBRpyh75";
@@ -76,14 +72,12 @@ const int mqtt_port = 1883;
 const char* mqtt_user = "68637fdd2ef34a81cc197c5d";
 const char* mqtt_pass = "vE77J2xvmI8VHQTh0KacgrxP";
 
-// Topics
-const char* publish_topic = "100000";
-const char* subscribe_topic = "device/your_device_id/command"; // optional
+// MQTT Topics
+const char* publish_topic = "100004";
+const char* subscribe_topic = "200000";  // Optional
 
-// === DHT11 Sensor Setup ===
-// Change pin accordingly to your ESP32 GPIO
-#define DHT_PIN 2
-DHT11 dht11(DHT_PIN);
+// === Pressure Sensor Pin ===
+#define Sensor A0
 
 // MQTT client setup
 WiFiClient espClient;
@@ -112,7 +106,7 @@ void setup_wifi() {
   }
 }
 
-// === MQTT Callback ===
+// === MQTT Callback Function ===
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message received [");
   Serial.print(topic);
@@ -139,68 +133,60 @@ void reconnect() {
   }
 }
 
+// === Setup ===
 void setup() {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
+  pinMode(Sensor, INPUT);
 }
 
+// === Main Loop ===
 void loop() {
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
 
-  int temperature = 0;
-  int humidity = 0;
-  int result = dht11.readTemperatureHumidity(temperature, humidity);
+  int output_value = analogRead(Sensor);
+  Serial.println(output_value);
+  delay(100);
 
-  if (result == 0) {
-    // Create JSON object
-    StaticJsonDocument<256> doc;
-    doc["hardware_serial"] = "100000";
-    JsonObject payload_fields = doc.createNestedObject("payload_fields");
-    payload_fields["temperature"] = temperature;
-    payload_fields["humidity"] = humidity;
+  // Create JSON payload
+  StaticJsonDocument<256> doc;
+  doc["hardware_serial"] = "100004";
+  JsonObject payload_fields = doc.createNestedObject("payload_fields");
+  payload_fields["sound_value"] = output_value;
 
-    // Serialize to JSON string
-    char jsonBuffer[512];
-    serializeJson(doc, jsonBuffer);
+  // Serialize and publish JSON
+  char jsonBuffer[512];
+  serializeJson(doc, jsonBuffer);
+  client.publish(publish_topic, jsonBuffer);
 
-    // Publish to MQTT
-    client.publish(publish_topic, jsonBuffer);
-    Serial.println("Data published:");
-    Serial.println(jsonBuffer);
-  } else {
-    Serial.print("DHT11 read error: ");
-    Serial.println(DHT11::getErrorString(result));
-  }
+  Serial.println("Data published:");
+  Serial.println(jsonBuffer);
 
-  delay(10000); // Publish every 10 seconds
+  delay(10000);  // Send data every 10 seconds
 }
 ```
 
 ## Dashboard Creation
 
-Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Environmental Monitoring.
+Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Noise Monitoring.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\10.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\33.jpg" alt="Centered Image" width="900" />
 </p>
 
 After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\11.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\34.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\12.jpg" alt="Centered Image" width="900" />
-</p>
-
-<p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\35.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
@@ -208,11 +194,11 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.jpg" alt="Centered Image" width="900" />
 </p>
 
 # Web Server
@@ -221,25 +207,21 @@ After setting up your dashboard this will be the expected outcome in your platfo
 
 ```c
 #include <WiFi.h>
-#include <DHT11.h>
 
-// === WiFi Credentials ===
+// === Replace with your WiFi credentials ===
 const char* ssid = "YOUR SSID";
 const char* password = "YOUR SSID PASSWORD";
 
 // === Web Server Port ===
 WiFiServer server(80);
 
-// === DHT11 Sensor Setup ===
-#define DHT11_PIN 2
-DHT11 dht11(DHT11_PIN);
-int temperature = 0;
-int humidity = 0;
+#define SOUND_SENSOR_PIN A0
+int soundValue = 0;
 
 void setup() {
   Serial.begin(115200);
-  
-  // Connect to WiFi
+
+  // Connect to Wi-Fi
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -258,10 +240,13 @@ void setup() {
 }
 
 void loop() {
-  readSensorData();
+  // Read analog value from sound sensor
+  soundValue = analogRead(SOUND_SENSOR_PIN);
+  Serial.print("Sound Sensor Value: ");
+  Serial.println(soundValue);
 
-  WiFiClient client = server.available();  // listen for incoming clients
-
+  // Handle incoming web client
+  WiFiClient client = server.available();
   if (client) {
     Serial.println("New Client.");
     String currentLine = "";
@@ -278,49 +263,32 @@ void loop() {
           client.println("Content-type:text/html");
           client.println();
 
-          // HTML Response
+          // Webpage HTML content
           client.println("<!DOCTYPE html><html>");
-          client.println("<head><meta charset='utf-8'><title>ESP32 DHT11 Monitor</title></head>");
-          client.println("<body><h2>ESP32 Environment Monitor</h2>");
-
-          if (temperature != 0 && humidity != 0) {
-            client.printf("<p>Temperature: <strong>%d &deg;C</strong></p>", temperature);
-            client.printf("<p>Humidity: <strong>%d %%</strong></p>", humidity);
-          } else {
-            client.println("<p style='color:red;'>Sensor Error or No Data</p>");
-          }
-
+          client.println("<head><meta charset='utf-8'><title>ESP32 Sound Sensor</title></head>");
+          client.println("<body>");
+          client.println("<h2>ESP32 Sound Sensor Reading</h2>");
+          client.printf("<p>Analog Value: <strong>%d</strong></p>", soundValue);
           client.println("</body></html>");
+
           break;
         }
       }
     }
+
+    delay(1);
     client.stop();
     Serial.println("Client disconnected.");
   }
 
-  delay(2000); // Read every 2 seconds
-}
-
-// === Read DHT11 Sensor Data ===
-void readSensorData() {
-  int result = dht11.readTemperatureHumidity(temperature, humidity);
-
-  if (result == 0) {
-    Serial.print("Temperature: ");
-    Serial.print(temperature);
-    Serial.print(" °C\tHumidity: ");
-    Serial.print(humidity);
-    Serial.println(" %");
-  } else {
-    Serial.print("DHT11 Error: ");
-    Serial.println(DHT11::getErrorString(result));
-    temperature = 0;
-    humidity = 0;
-  }
+  delay(1000); // Read and serve every 1 second
 }
 ```
+
+## Expected Output
 
 # Network Server (Access Point)
 
 ## Sample Code
+
+## Expected Output
