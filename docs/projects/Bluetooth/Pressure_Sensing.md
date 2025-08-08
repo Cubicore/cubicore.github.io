@@ -1,6 +1,6 @@
 ---
 layout: project
-title: Pressure Monitoring using Lorfi-WiFi
+title: Pressure Monitoring using Lorfi-WB
 ---
 
 # Description

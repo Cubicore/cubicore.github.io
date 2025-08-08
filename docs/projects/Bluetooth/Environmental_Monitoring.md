@@ -1,19 +1,18 @@
 ---
 layout: project
-title: Ambient Light Monitoring using Lorfi-WiFi
+title: Environmental Monitoring using Lorfi-WB
 ---
 
 # Description
 
-This guide shows how to use the TEMT6000 ambient light sensor with the Lorfi-WB board to monitor light levels accurately. The sensor mimics human eye sensitivity and works well in varying light conditions, except in very dark environments. It filters out infrared and UV light for more precise visible light readings.
-
-With Lorfi-WB’s built-in Wi-Fi and LoRa, you can send real-time light data to local or cloud platforms—perfect for smart lighting, indoor automation, or remote monitoring projects.
+This guide shows how to build a simple environmental monitoring system using the DHT11 sensor and the Lorfi-WIFI board. The DHT11 measures temperature and humidity, while the Lorfi-WIFI sends the data wirelessly. With its easy setup and real-time data transmission, this project is ideal for learning how to connect sensors to IoT devices and monitor environmental conditions remotely.
 
 # Specification
 
-- Supply Voltage: +5VDC 50mA
-- Size: 36.5*16mm
-- Weight: 4g
+- Supply Voltage: +5 V
+- Temperature range: 0-50 °C error of ± 2 °C
+- Humidity: 20-90% RH ± 5% RH error
+- Interface: Digital
 
 ## Hardware Setup
 
@@ -26,16 +25,20 @@ With Lorfi-WB’s built-in Wi-Fi and LoRa, you can send real-time light data to 
 Connect the Signal pin of the sensor to the Digital Input GPIO2 on the Lorfi board, connect the GND pin to GND port, VCC pin to 5V port.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\21.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\4.png" alt="Centered Image" width="900" />
 </p>
 
-#### Using directly Lorfi-Wifi
+#### Using directly Lorfi-WB
 
 You can find complete <a href="/docs/Hardware_Guide.html">Lorfi-WB IO pinout here</a>.
+
+*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
 
 #### Using Lorfi Interface board
 
 You can find complete guide for <a href="/docs/Hardware_Guide.html">Lorfi Interface here</a>.
+
+*MIGHT NEED TO ADD NOTES ON POWER REQUIREMENTS, PIN CONSIDERATIONS, ETC.*
 
 ## Software Setup
 
@@ -61,6 +64,7 @@ First setup the MQTT configuration of your device. Click <a href="/docs/Software
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include <DHT11.h>
 
 // === WiFi Settings ===
 const char* ssid = "PLDTHOMEFIBRpyh75";
@@ -72,12 +76,14 @@ const int mqtt_port = 1883;
 const char* mqtt_user = "68637fdd2ef34a81cc197c5d";
 const char* mqtt_pass = "vE77J2xvmI8VHQTh0KacgrxP";
 
-// MQTT Topics
-const char* publish_topic = "100003";
-const char* subscribe_topic = "200000";  // Optional
+// Topics
+const char* publish_topic = "100000";
+const char* subscribe_topic = "device/your_device_id/command"; // optional
 
-// === Pressure Sensor Pin ===
-#define Sensor A0
+// === DHT11 Sensor Setup ===
+// Change pin accordingly to your ESP32 GPIO
+#define DHT_PIN 2
+DHT11 dht11(DHT_PIN);
 
 // MQTT client setup
 WiFiClient espClient;
@@ -106,7 +112,7 @@ void setup_wifi() {
   }
 }
 
-// === MQTT Callback Function ===
+// === MQTT Callback ===
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message received [");
   Serial.print(topic);
@@ -133,60 +139,68 @@ void reconnect() {
   }
 }
 
-// === Setup ===
 void setup() {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
-  pinMode(Sensor, INPUT);
 }
 
-// === Main Loop ===
 void loop() {
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
 
-  int light_Value = analogRead(Sensor);
-  Serial.println(light_Value);
-  delay(100);
+  int temperature = 0;
+  int humidity = 0;
+  int result = dht11.readTemperatureHumidity(temperature, humidity);
 
-  // Create JSON payload
-  StaticJsonDocument<256> doc;
-  doc["hardware_serial"] = "100003";
-  JsonObject payload_fields = doc.createNestedObject("payload_fields");
-  payload_fields["light_value"] = light_Value;
+  if (result == 0) {
+    // Create JSON object
+    StaticJsonDocument<256> doc;
+    doc["hardware_serial"] = "100000";
+    JsonObject payload_fields = doc.createNestedObject("payload_fields");
+    payload_fields["temperature"] = temperature;
+    payload_fields["humidity"] = humidity;
 
-  // Serialize and publish JSON
-  char jsonBuffer[512];
-  serializeJson(doc, jsonBuffer);
-  client.publish(publish_topic, jsonBuffer);
+    // Serialize to JSON string
+    char jsonBuffer[512];
+    serializeJson(doc, jsonBuffer);
 
-  Serial.println("Data published:");
-  Serial.println(jsonBuffer);
+    // Publish to MQTT
+    client.publish(publish_topic, jsonBuffer);
+    Serial.println("Data published:");
+    Serial.println(jsonBuffer);
+  } else {
+    Serial.print("DHT11 read error: ");
+    Serial.println(DHT11::getErrorString(result));
+  }
 
-  delay(10000);  // Send data every 10 seconds
+  delay(10000); // Publish every 10 seconds
 }
 ```
 
 ## Dashboard Creation
 
-Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Ambient Light Monitoring.
+Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Environmental Monitoring.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\27.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\10.jpg" alt="Centered Image" width="900" />
 </p>
 
 After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\28.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\11.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\29.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\12.jpg" alt="Centered Image" width="900" />
+</p>
+
+<p style="text-align: center;">
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
@@ -194,11 +208,11 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\30.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\31.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
 </p>
 
 # Web Server
@@ -207,6 +221,7 @@ After setting up your dashboard this will be the expected outcome in your platfo
 
 ```c
 #include <WiFi.h>
+#include <DHT11.h>
 
 // === WiFi Credentials ===
 const char* ssid = "YOUR SSID";
@@ -215,14 +230,16 @@ const char* password = "YOUR SSID PASSWORD";
 // === Web Server Port ===
 WiFiServer server(80);
 
-// === Ambient Light Sensor Pin ===
-#define LIGHT_SENSOR_PIN A0
+// === DHT11 Sensor Setup ===
+#define DHT11_PIN 2
+DHT11 dht11(DHT11_PIN);
+int temperature = 0;
+int humidity = 0;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(LIGHT_SENSOR_PIN, INPUT);
-
-  // Connect to Wi-Fi
+  
+  // Connect to WiFi
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -232,21 +249,19 @@ void setup() {
     Serial.print(".");
   }
 
-  // Wi-Fi Connected
   Serial.println("\nWiFi connected.");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Start Web Server
+  // Start the server
   server.begin();
 }
 
 void loop() {
-  int lightValue = analogRead(LIGHT_SENSOR_PIN);  // Read ambient light level
-  Serial.print("Ambient Light Reading: ");
-  Serial.println(lightValue);
+  readSensorData();
 
-  WiFiClient client = server.available();
+  WiFiClient client = server.available();  // listen for incoming clients
+
   if (client) {
     Serial.println("New Client.");
     String currentLine = "";
@@ -258,34 +273,55 @@ void loop() {
         currentLine += c;
 
         if (c == '\n') {
-          // Send HTML response
+          // End of HTTP request
           client.println("HTTP/1.1 200 OK");
           client.println("Content-type:text/html");
           client.println();
 
+          // HTML Response
           client.println("<!DOCTYPE html><html>");
-          client.println("<head><meta charset='utf-8'><title>Ambient Light Sensor</title></head>");
-          client.println("<body><h2>ESP32 Ambient Light Monitor</h2>");
-          client.printf("<p>Analog Light Value: <strong>%d</strong></p>", lightValue);
+          client.println("<head><meta charset='utf-8'><title>ESP32 DHT11 Monitor</title></head>");
+          client.println("<body><h2>ESP32 Environment Monitor</h2>");
+
+          if (temperature != 0 && humidity != 0) {
+            client.printf("<p>Temperature: <strong>%d &deg;C</strong></p>", temperature);
+            client.printf("<p>Humidity: <strong>%d %%</strong></p>", humidity);
+          } else {
+            client.println("<p style='color:red;'>Sensor Error or No Data</p>");
+          }
+
           client.println("</body></html>");
           break;
         }
       }
     }
-
     client.stop();
     Serial.println("Client disconnected.");
   }
 
-  delay(1000);  // Optional: Update every 1 second
+  delay(2000); // Read every 2 seconds
+}
+
+// === Read DHT11 Sensor Data ===
+void readSensorData() {
+  int result = dht11.readTemperatureHumidity(temperature, humidity);
+
+  if (result == 0) {
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.print(" °C\tHumidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+  } else {
+    Serial.print("DHT11 Error: ");
+    Serial.println(DHT11::getErrorString(result));
+    temperature = 0;
+    humidity = 0;
+  }
 }
 ```
 
-## Expected Output
 
 # Network Server (Access Point)
 
 ## Sample Code
-
-## Expected Output
-

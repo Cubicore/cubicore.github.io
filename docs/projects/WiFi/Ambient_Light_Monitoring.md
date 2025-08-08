@@ -201,7 +201,7 @@ After setting up your dashboard this will be the expected outcome in your platfo
   <img src="\assets\Images\LORFI_Components\ThingsPH_Images\31.jpg" alt="Centered Image" width="900" />
 </p>
 
-# Web Server
+# Local Web Server
 
 ## Sample Code
 
@@ -286,6 +286,120 @@ void loop() {
 # Network Server (Access Point)
 
 ## Sample Code
+
+### Lorfi-WB #1: Access Point
+
+```c
+#include <WiFi.h>
+
+const char* ssid = "ESP_Hub";
+const char* password = "12345678";
+
+WiFiServer server(80);
+
+// Use pin A0 for analog light sensor
+#define LIGHT_SENSOR_PIN A0
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LIGHT_SENSOR_PIN, INPUT);
+
+  // Start the access point
+  WiFi.softAP(ssid, password);
+  Serial.println("Access Point started");
+
+  Serial.print("AP IP address: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.begin();
+}
+
+void loop() {
+  int lightValue = analogRead(LIGHT_SENSOR_PIN); // Read from sensor
+  Serial.print("Ambient Light: ");
+  Serial.println(lightValue);
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("Client connected");
+
+    // Wait for HTTP request
+    while (client.connected()) {
+      if (client.available()) {
+        String req = client.readStringUntil('\n'); // Read until newline
+        Serial.println("Request: " + req);
+
+        // Send plain-text response
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/plain");
+        client.println("Connection: close");
+        client.println();
+        client.print(lightValue); // Send light value
+
+        break;
+      }
+    }
+
+    delay(1);
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+
+  delay(1000); // Optional: slow down the loop
+}
+
+```
+
+## Sample Code
+
+### Lorfi-WB #2: Client
+
+```c
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "ESP_Hub";               // Must match the AP
+const char* password = "12345678";
+const char* serverIP = "192.168.4.1";       // Default IP of ESP AP
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to ESP_Hub");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to ESP_Hub");
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    String url = "http://" + String(serverIP); // Target the AP's IP
+    http.begin(url);
+    int httpCode = http.GET();
+
+    if (httpCode == 200) {
+      String payload = http.getString();
+      Serial.print("Received Ambient Light: ");
+      Serial.println(payload);
+    } else {
+      Serial.print("GET request failed. HTTP code: ");
+      Serial.println(httpCode);
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected");
+  }
+
+  delay(5000); // Repeat every 5 seconds
+}
+```
 
 ## Expected Output
 

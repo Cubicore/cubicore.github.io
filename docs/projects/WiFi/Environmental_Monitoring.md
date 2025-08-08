@@ -215,7 +215,7 @@ After setting up your dashboard this will be the expected outcome in your platfo
   <img src="\assets\Images\LORFI_Components\ThingsPH_Images\13.jpg" alt="Centered Image" width="900" />
 </p>
 
-# Web Server
+# Local Web Server
 
 ## Sample Code
 
@@ -320,7 +320,132 @@ void readSensorData() {
   }
 }
 ```
+## Expected Output
 
 # Network Server (Access Point)
 
 ## Sample Code
+
+### Lorfi-WB #1: Access Point
+
+```c
+#include <WiFi.h>
+#include <DHT.h>
+
+// ==== DHT11 Config ====
+#define DHTPIN 2          // Connect DHT11 signal to GPIO 4
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+// ==== WiFi Access Point Credentials ====
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR PASSWORD";
+
+// ==== Web Server ====
+WiFiServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+
+  // Start Wi-Fi Access Point
+  WiFi.softAP(ssid, password);
+  Serial.println("Access Point Started");
+  Serial.print("AP IP address: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.begin();
+}
+
+void loop() {
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+
+  if (isnan(temp) || isnan(hum)) {
+    Serial.println("Failed to read from DHT sensor!");
+    delay(2000);
+    return;
+  }
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("Client connected");
+
+    while (client.connected()) {
+      if (client.available()) {
+        String req = client.readStringUntil('\n');
+        Serial.println("Request: " + req);
+
+        // Send plain text response with sensor data
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/plain");
+        client.println("Connection: close");
+        client.println();
+        client.printf("Temperature: %.1f C\nHumidity: %.1f %%", temp, hum);
+        break;
+      }
+    }
+
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+
+  delay(2000);  // Sensor read interval
+}
+
+```
+
+## Sample Code
+
+### Lorfi-WB #2: Client
+
+```c
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "YOUR SSID";               // Must match the AP
+const char* password = "YOUR PASSWORD";
+const char* serverIP = "Generate Server IP";       // Default IP of ESP AP
+const int serverPort = 80;
+
+void setup() {
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to Access Point");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to Access Point!");
+  Serial.print("Local IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "http://" + String(serverIP) + ":" + String(serverPort);
+    
+    http.begin(url);
+    int httpCode = http.GET();
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println("Received from Server:");
+      Serial.println(payload);
+    } else {
+      Serial.printf("Error in HTTP request: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected.");
+  }
+
+  delay(2000); // Wait 2 seconds before next request
+}
+
+```

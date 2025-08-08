@@ -201,7 +201,7 @@ After setting up your dashboard this will be the expected outcome in your platfo
   <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.jpg" alt="Centered Image" width="900" />
 </p>
 
-# Web Server
+# Local Web Server
 
 ## Sample Code
 
@@ -290,5 +290,120 @@ void loop() {
 # Network Server (Access Point)
 
 ## Sample Code
+
+### Lorfi-WB #1: Access Point
+
+```c
+#include <WiFi.h>
+
+// === Sound Sensor Pin (Analog) ===
+#define SOUND_SENSOR_PIN A0  // or GPIO 36
+
+// === Wi-Fi Access Point Credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR PASSWORD";
+
+// === Web Server ===
+WiFiServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(SOUND_SENSOR_PIN, INPUT);
+
+  // Start Wi-Fi Access Point
+  WiFi.softAP(ssid, password);
+  Serial.println("Access Point started");
+  Serial.print("AP IP address: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.begin();
+}
+
+void loop() {
+  int soundValue = analogRead(SOUND_SENSOR_PIN);  // Read sound level
+  Serial.print("Sound Level: ");
+  Serial.println(soundValue);
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("Client connected");
+
+    while (client.connected()) {
+      if (client.available()) {
+        String req = client.readStringUntil('\n');
+        Serial.println("Request: " + req);
+
+        // Send plain text response
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/plain");
+        client.println("Connection: close");
+        client.println();
+        client.printf("Analog Sound Value: %d", soundValue);
+        break;
+      }
+    }
+
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+
+  delay(1000);
+}
+
+```
+
+## Sample Code
+
+### Lorfi-WB #2: Client
+
+```c
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "YOUR SSID";               // Must match the AP
+const char* password = "YOUR PASSWORD";
+const char* serverIP = "Generate Server IP";       // Default IP of ESP AP
+const int serverPort = 80;
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Connecting to Access Point");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to AP!");
+  Serial.print("Client IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "http://" + String(serverIP) + ":" + String(serverPort);
+
+    http.begin(url);
+    int httpCode = http.GET();
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println("Received from Server:");
+      Serial.println(payload);
+    } else {
+      Serial.printf("HTTP request failed: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected.");
+  }
+
+  delay(2000);
+}
+
+```
 
 ## Expected Output

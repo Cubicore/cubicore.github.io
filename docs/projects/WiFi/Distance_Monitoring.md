@@ -218,20 +218,19 @@ After setting up your dashboard this will be the expected outcome in your platfo
   <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
-# Web Server
+# Local Web Server
 
 ## Sample Code
 
 ```c
 #include <WiFi.h>
 
+const char* ssid = "RAK7268C_7F68";
+const char* password = "";
+
 // === Ultrasonic Sensor Pins ===
 #define TRIG_PIN 2
 #define ECHO_PIN 14
-
-// === WiFi Credentials ===
-const char* ssid = "YOUR SSID";
-const char* password = "YOUR SSID PASSWORD";
 
 // === Web Server Port ===
 WiFiServer server(80);
@@ -240,7 +239,7 @@ WiFiServer server(80);
 float distance_cm = 0;
 
 // === Distance Threshold ===
-const float object_threshold_cm = 20.0;  // Change this as needed
+const float object_threshold_cm = 5.0;  // Change this as needed
 
 void setup() {
   Serial.begin(115200);
@@ -290,7 +289,7 @@ void loop() {
           // HTML Response
           client.println("<!DOCTYPE html><html>");
           client.println("<head><meta charset='utf-8'><title>Distance Monitor</title></head>");
-          client.println("<body><h2>ESP32 Distance Sensor</h2>");
+          client.println("<body><h2>Distance Monitoring</h2>");
           client.printf("<p>Distance: <strong>%.2f cm</strong></p>", distance_cm);
 
           if (distance_cm > 0 && distance_cm <= object_threshold_cm) {
@@ -335,5 +334,146 @@ void measureDistance() {
 # Network Server (Access Point)
 
 ## Sample Code
+
+### Lorfi-WB #1: Access Point
+
+```c
+#include <WiFi.h>
+
+// === Wi-Fi Access Point Credentials ===
+const char* ssid = "YOUR SSID";
+const char* password = "YOUR PASSWORD";
+
+// === Ultrasonic Sensor Pins ===
+#define TRIG_PIN 2
+#define ECHO_PIN 14
+
+// === Web Server ===
+WiFiServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // Start Access Point
+  WiFi.softAP(ssid, password);
+  Serial.println("Access Point started");
+  Serial.print("AP IP address: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.begin();
+}
+
+float getDistanceCM() {
+  // Trigger the ultrasonic pulse
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  // Measure duration of echo pulse
+  long duration = pulseIn(ECHO_PIN, HIGH, 30000);  // 30ms timeout
+  float distance_cm = duration * 0.034 / 2;
+
+  if (duration == 0) {
+    return -1; // Timeout / error
+  }
+
+  return distance_cm;
+}
+
+void loop() {
+  float distance = getDistanceCM();
+  Serial.printf("Distance: %.2f cm\n", distance);
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("Client connected");
+
+    while (client.connected()) {
+      if (client.available()) {
+        String req = client.readStringUntil('\n');
+        Serial.println("Request: " + req);
+
+        // Send HTTP Response
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/plain");
+        client.println("Connection: close");
+        client.println();
+        if (distance < 0) {
+          client.println("Error: Timeout reading sensor");
+        } else {
+          client.printf("Distance: %.2f cm", distance);
+        }
+        break;
+      }
+    }
+
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+
+  delay(1000);  // Optional: 1-second refresh rate
+}
+
+```
+
+## Sample Code
+
+### Lorfi-WB #2: Client
+
+```c
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "YOUR SSID";               // Must match the AP
+const char* password = "YOUR PASSWORD";
+const char* serverIP = "Generate Server IP";       // Default IP of ESP AP
+const int serverPort = 80;
+
+void setup() {
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to Access Point");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to Access Point!");
+  Serial.print("Local IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "http://" + String(serverIP) + ":" + String(serverPort);
+    
+    http.begin(url);
+    int httpCode = http.GET();
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println("Received from Server:");
+      Serial.println(payload);
+    } else {
+      Serial.printf("Error in HTTP request: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected.");
+  }
+
+  delay(2000); // Wait 2 seconds before next request
+}
+
+```
 
 ## Expected Output

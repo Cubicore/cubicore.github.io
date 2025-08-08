@@ -1,32 +1,34 @@
 ---
 layout: project
-title: Sound Monitoring using Lorfi-WiFi
+title: Distance Monitoring using Lorfi-WB
 ---
 
 # Description
 
-The analog sound sensor is mainly used to detect the intensity of surrounding sounds. It features a built-in potentiometer, allowing you to adjust the signal gain as needed. This sensor is great for creating interactive projects, such as a voice-activated switch.
+This guide covers how to build a distance monitoring system using an ultrasonic sensor and the Lorfi-WIFI board. The ultrasonic sensor accurately measures distances from 2 cm to 450 cm without contact, while the Lorfi-WIFI transmits the data wirelessly. Ideal for learning real-time distance tracking, this project demonstrates how to combine sensors with IoT boards for remote monitoring applications.
 
 # Specification
 
-- Supply Voltage: 3.3V to 5V
-- Interface: Analog
-- Size: 30*20mm
-- Weight: 4g
+- Working voltage：0.5V(DC)
+- Working current：15mA
+- Detecting range：2-450cm
+- Detecting angle：15 degrees
+- Input trigger pulse：10us TTL Level
+- Output echo signal： output TTL level signal(HIGH)，proportional to range.
 
 ## Hardware Setup
 
-|     Sensor    |   Lorfi WB  |
-|---------------|-------------|
-| Signal        | A0          |
-| VCC           | 5V          |
-| GND           | GND         |
+Next, please refer to the following connection table:
 
-
-Connect the S pin of module to Analog A0 of the Lorfi board, connect the negative pin to GND port, positive pin to 5V port.
+| Ultrasonic ranger | Lorfi WB    | 
+|-------------------|-------------|
+| ECHO              | GPIO14      |
+| TRIG              | GPIO2       |
+| VCC               | 5V          |
+| GND               | GND         |
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\12.png" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\Lorfi-WB_Sensors\8.png" alt="Centered Image" width="900" />
 </p>
 
 #### Using directly Lorfi-WB
@@ -72,12 +74,13 @@ const int mqtt_port = 1883;
 const char* mqtt_user = "68637fdd2ef34a81cc197c5d";
 const char* mqtt_pass = "vE77J2xvmI8VHQTh0KacgrxP";
 
-// MQTT Topics
-const char* publish_topic = "100004";
-const char* subscribe_topic = "200000";  // Optional
+// Topics
+const char* publish_topic = "100001";
+const char* subscribe_topic = "200000";  // optional
 
-// === Pressure Sensor Pin ===
-#define Sensor A0
+// === Ultrasonic Sensor Pins ===
+#define TRIG_PIN 2
+#define ECHO_PIN 14
 
 // MQTT client setup
 WiFiClient espClient;
@@ -106,7 +109,7 @@ void setup_wifi() {
   }
 }
 
-// === MQTT Callback Function ===
+// === MQTT Callback ===
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message received [");
   Serial.print(topic);
@@ -139,7 +142,8 @@ void setup() {
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
-  pinMode(Sensor, INPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);
 }
 
 // === Main Loop ===
@@ -149,44 +153,57 @@ void loop() {
   }
   client.loop();
 
-  int output_value = analogRead(Sensor);
-  Serial.println(output_value);
-  delay(100);
+  // Measure distance
+  long duration;
+  float distance_cm;
 
-  // Create JSON payload
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance_cm = duration * 0.0343 / 2.0;
+
+  // Display on Serial
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.println(" cm");
+
+  // Publish JSON data to MQTT
   StaticJsonDocument<256> doc;
-  doc["hardware_serial"] = "100004";
+  doc["hardware_serial"] = "100001";
   JsonObject payload_fields = doc.createNestedObject("payload_fields");
-  payload_fields["sound_value"] = output_value;
+  payload_fields["distance_cm"] = distance_cm;
 
-  // Serialize and publish JSON
   char jsonBuffer[512];
   serializeJson(doc, jsonBuffer);
-  client.publish(publish_topic, jsonBuffer);
 
+  client.publish(publish_topic, jsonBuffer);
   Serial.println("Data published:");
   Serial.println(jsonBuffer);
 
-  delay(10000);  // Send data every 10 seconds
+  delay(10000);  // Send every 10 seconds
 }
 ```
 
 ## Dashboard Creation
 
-Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Noise Monitoring.
+Go to the dashboard section of ThingsPH. Click create dashboard and input your dashboard name ex: Distance to Object Monitoring.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\33.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\16.jpg" alt="Centered Image" width="900" />
 </p>
 
 After creating your own dashboard. Create a panel within the dashboard. Configure your panel by choosing your specific configuration in the Data Source.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\34.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\17.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\35.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\18.jpg" alt="Centered Image" width="900" />
 </p>
 
 ## Expected Output
@@ -194,11 +211,11 @@ After creating your own dashboard. Create a panel within the dashboard. Configur
 After setting up your dashboard this will be the expected outcome in your platform(thingsPH) and Arduino IDE.
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
 <p style="text-align: center;">
-  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\36.jpg" alt="Centered Image" width="900" />
+  <img src="\assets\Images\LORFI_Components\ThingsPH_Images\19.jpg" alt="Centered Image" width="900" />
 </p>
 
 # Web Server
@@ -208,20 +225,31 @@ After setting up your dashboard this will be the expected outcome in your platfo
 ```c
 #include <WiFi.h>
 
-// === Replace with your WiFi credentials ===
+// === Ultrasonic Sensor Pins ===
+#define TRIG_PIN 2
+#define ECHO_PIN 14
+
+// === WiFi Credentials ===
 const char* ssid = "YOUR SSID";
 const char* password = "YOUR SSID PASSWORD";
 
 // === Web Server Port ===
 WiFiServer server(80);
 
-#define SOUND_SENSOR_PIN A0
-int soundValue = 0;
+// === Global Distance Variable ===
+float distance_cm = 0;
+
+// === Distance Threshold ===
+const float object_threshold_cm = 20.0;  // Change this as needed
 
 void setup() {
   Serial.begin(115200);
 
-  // Connect to Wi-Fi
+  // Sensor Pin Modes
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  // WiFi Connection
   Serial.print("Connecting to ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -235,17 +263,13 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Start the server
+  // Start Server
   server.begin();
 }
 
 void loop() {
-  // Read analog value from sound sensor
-  soundValue = analogRead(SOUND_SENSOR_PIN);
-  Serial.print("Sound Sensor Value: ");
-  Serial.println(soundValue);
+  measureDistance();  // Update global distance_cm
 
-  // Handle incoming web client
   WiFiClient client = server.available();
   if (client) {
     Serial.println("New Client.");
@@ -263,25 +287,46 @@ void loop() {
           client.println("Content-type:text/html");
           client.println();
 
-          // Webpage HTML content
+          // HTML Response
           client.println("<!DOCTYPE html><html>");
-          client.println("<head><meta charset='utf-8'><title>ESP32 Sound Sensor</title></head>");
-          client.println("<body>");
-          client.println("<h2>ESP32 Sound Sensor Reading</h2>");
-          client.printf("<p>Analog Value: <strong>%d</strong></p>", soundValue);
-          client.println("</body></html>");
+          client.println("<head><meta charset='utf-8'><title>Distance Monitor</title></head>");
+          client.println("<body><h2>ESP32 Distance Sensor</h2>");
+          client.printf("<p>Distance: <strong>%.2f cm</strong></p>", distance_cm);
 
+          if (distance_cm > 0 && distance_cm <= object_threshold_cm) {
+            client.println("<p style='color:red;'>Object Detected!</p>");
+          } else {
+            client.println("<p style='color:green;'>No Object Detected.</p>");
+          }
+
+          client.println("</body></html>");
           break;
         }
       }
     }
-
-    delay(1);
     client.stop();
     Serial.println("Client disconnected.");
   }
 
-  delay(1000); // Read and serve every 1 second
+  delay(1000);  // Wait before the next loop
+}
+
+// === Measure Distance Function ===
+void measureDistance() {
+  long duration;
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance_cm = duration * 0.0343 / 2;
+
+  Serial.print("Distance: ");
+  Serial.print(distance_cm);
+  Serial.println(" cm");
 }
 ```
 

@@ -215,7 +215,7 @@ After setting up your dashboard this will be the expected outcome in your platfo
   <img src="\assets\Images\LORFI_Components\ThingsPH_Images\25.jpg" alt="Centered Image" width="900" />
 </p>
 
-# Web Server
+# Local Web Server
 
 ## Sample Code
 
@@ -229,7 +229,7 @@ const char* password = "YOUR SSID PASSWORD";
 // === Web Server Port ===
 WiFiServer server(80);
 
-#define SENSOR_PIN 2 
+#define SENSOR_PIN A0 
 
 void setup() {
   Serial.begin(115200);
@@ -281,7 +281,7 @@ void loop() {
           // HTML Content
           client.println("<!DOCTYPE html><html>");
           client.println("<head><meta charset='utf-8'><title>ESP32 Pressure Sensor</title></head>");
-          client.println("<body><h2>ESP32 Pressure Sensor</h2>");
+          client.println("<body><h2>Pressure Monitoring</h2>");
           client.printf("<p>Analog Reading: <strong>%d</strong></p>", pressureValue);
           client.println("</body></html>");
 
@@ -303,3 +303,123 @@ void loop() {
 # Network Server (Access Point)
 
 ## Sample Code
+
+# Lorfi-WB #1: Access Point
+
+```c
+#include <WiFi.h>
+
+// === Pressure Sensor Analog Pin ===
+#define PRESSURE_SENSOR_PIN 36  // Use GPIO36 (A0) or any ADC-capable pin
+
+// === Access Point Credentials ===
+const char* ssid = "ESP32_Pressure_AP";
+const char* password = "12345678";
+
+// === Web Server Port ===
+WiFiServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(PRESSURE_SENSOR_PIN, INPUT);
+
+  // Start Access Point
+  WiFi.softAP(ssid, password);
+  Serial.println("Access Point Started");
+  Serial.print("AP IP Address: ");
+  Serial.println(WiFi.softAPIP());
+
+  server.begin();
+}
+
+void loop() {
+  int pressureValue = analogRead(PRESSURE_SENSOR_PIN);
+  Serial.print("Analog Pressure Value: ");
+  Serial.println(pressureValue);
+
+  WiFiClient client = server.available();
+  if (client) {
+    Serial.println("Client connected");
+
+    while (client.connected()) {
+      if (client.available()) {
+        String request = client.readStringUntil('\n');
+        Serial.println("Request: " + request);
+
+        // Send pressure data as plain text
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/plain");
+        client.println("Connection: close");
+        client.println();
+        client.print("Analog Pressure Value: ");
+        client.print(pressureValue);
+        break;
+      }
+    }
+
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+
+  delay(1000); // Optional: adjust read frequency
+}
+
+```
+
+# Lorfi-WB #2: Client
+
+## Sample Code
+
+```c
+
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+// === AP Credentials ===
+const char* ssid = "ESP32_Pressure_AP";
+const char* password = "12345678";
+
+// === Access Point IP Address ===
+const char* serverIP = "192.168.4.1";
+const int serverPort = 80;
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Connecting to AP");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to Access Point");
+  Serial.print("Client IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "http://" + String(serverIP) + ":" + String(serverPort);
+    http.begin(url);
+
+    int httpCode = http.GET();
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println("Received from server:");
+      Serial.println(payload);
+    } else {
+      Serial.printf("HTTP GET failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected");
+  }
+
+  delay(2000); // Adjust polling interval if needed
+}
+```
+
+# Expected Output
